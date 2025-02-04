@@ -3506,7 +3506,7 @@ class ParlerTTSForConditionalGeneration(PreTrainedModel):
         print(len(output_ids) % self.decoder.num_codebooks)
 
         if len(output_ids) % self.decoder.num_codebooks != 0:
-            diff = len(output_ids) % self.decoder.num_codebooks
+            diff = (len(output_ids) % self.decoder.num_codebooks) - 1
             output_ids = torch.cat((output_ids, torch.tensor([generation_config.pad_token_id]*diff)), 0)
 
         print(output_ids.shape)
