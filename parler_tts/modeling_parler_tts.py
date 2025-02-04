@@ -3503,7 +3503,9 @@ class ParlerTTSForConditionalGeneration(PreTrainedModel):
         #if len(output_ids) % self.decoder.num_codebooks != 0:
         #    diff = len(output_ids) % self.decoder.num_codebooks
         #    output_ids = torch.cat((output_ids, torch.tensor([generation_config.pad_token_id]*diff)), 0)
-            
+
+        print(output_ids[mask].shape)
+        
         output_ids = output_ids[mask].reshape(batch_size, self.decoder.num_codebooks, -1)
 
         # append the frame dimension back to the audio codes
