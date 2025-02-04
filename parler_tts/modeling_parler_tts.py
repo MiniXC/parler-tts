@@ -3486,6 +3486,8 @@ class ParlerTTSForConditionalGeneration(PreTrainedModel):
         if "input_values" in model_kwargs:
             # Handle input_values for voice steering
             print(output_ids)
+            print("pad token id", generation_config.pad_token_id)
+            print("shape", output_ids.shape)
             mask = output_ids
         else:
             # Revert the pattern delay mask by filtering the eos and bos token ids from the delay pattern mask
@@ -3497,7 +3499,11 @@ class ParlerTTSForConditionalGeneration(PreTrainedModel):
             )
 
         mask = (mask != generation_config.bos_token_id) & (mask != generation_config.pad_token_id)
-        
+
+        if len(output_ids) % self.decoder.num_codebooks != 0:
+            diff = len(output_ids) % self.decoder.num_codebooks
+            output_ids = torch.cat((output_ids, torch.tensor([generation_config.pad_token_id]*diff)), 0)
+            
         output_ids = output_ids[mask].reshape(batch_size, self.decoder.num_codebooks, -1)
 
         # append the frame dimension back to the audio codes
